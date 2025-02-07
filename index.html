@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Corazón Matemático</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: black;
+      flex-direction: column;
+      color: white;
+      font-family: Arial, sans-serif;
+      position: relative;
+    }
+
+    canvas {
+      background-color: black;
+      border-radius: 10px;
+    }
+
+    .month,
+    .date,
+    .dA {
+      position: absolute;
+      opacity: 0;
+      transition: opacity 1s ease-in-out, transform 1s ease-in-out;
+      transform: scale(0.5);
+      text-shadow: 0 0 5px cyan, 0 0 10px cyan, 0 0 15px cyan;
+      font-size: 20px;
+    }
+  </style>
+<script defer data-domain="moccasin-nolana-82.tiiny.site" src="https://analytics.tiiny.site/js/plausible.js"></script></head>
+
+<body>
+  <canvas id="canvas" width="400" height="400"></canvas>
+  <script>
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    let t = 0;
+    let glowIntensity = 10;
+    const months = ["07/05/2024", "07/06/2024", "07/07/2024", "07/08/2024", "07/09/2024", "07/10/2024", "07/11/2024", "07/12/2024", "07/01/2025"];
+    let monthIndex = 0;
+
+    function getRainbowColor(i, total) {
+      let frequency = 2 * Math.PI / total;
+      let red = Math.sin(frequency * i + 0) * 127 + 128;
+      let green = Math.sin(frequency * i + 2) * 127 + 128;
+      let blue = Math.sin(frequency * i + 4) * 127 + 128;
+      return `rgb(${Math.floor(red)}, ${Math.floor(green)}, ${Math.floor(blue)})`;
+    }
+
+    function drawHeart() {
+      if (t >= Math.PI * 2) return;
+      requestAnimationFrame(drawHeart);
+
+      let x = 16 * Math.pow(Math.sin(t), 3);
+      let y = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
+
+      let color = getRainbowColor(t * 100, Math.PI * 2 * 100);
+      ctx.shadowColor = color;
+      ctx.shadowBlur = glowIntensity;
+      ctx.fillStyle = color;
+      ctx.fillRect(200 + x * 10, 200 - y * 10, 3, 3);
+
+      t += 0.01;
+    }
+
+    function showMonths() {
+      if (monthIndex < months.length) {
+        const angle = (monthIndex / months.length) * Math.PI * 2;
+        const radius = 250; // Aumentado aún más para alejar las fechas del centro
+        const monthElement = document.createElement("div");
+        monthElement.textContent = months[monthIndex];
+        monthElement.classList.add("month");
+        document.body.appendChild(monthElement);
+
+        const centerX = window.innerWidth / 2;
+        const centerY = window.innerHeight / 2;
+        monthElement.style.left = `${centerX + radius * Math.cos(angle) - 50}px`; // Desplazar hacia la izquierda
+        monthElement.style.top = `${centerY + radius * Math.sin(angle)}px`;
+
+        setTimeout(() => {
+          monthElement.style.opacity = "1";
+          monthElement.style.transform = "scale(1)";
+        }, 100);
+        monthIndex++;
+        setTimeout(showMonths, 1000);
+      }
+    }
+
+    function showDate() {
+      const dateElement = document.createElement("div");
+      dateElement.textContent = '07/02/2025';
+      dateElement.classList.add("date");
+      document.body.appendChild(dateElement);
+
+      const centerX = window.innerWidth / 2;
+      const centerY = window.innerHeight / 2;
+      dateElement.style.left = `${centerX - 30}px`;  // Ajusta el posicionamiento
+      dateElement.style.top = `${centerY - 30}px`;  // Ajusta el posicionamiento
+
+      let colorIndex = 0;
+      setInterval(() => {
+        // Cambiar el color de la fecha en un ciclo arcoíris
+        dateElement.style.color = getRainbowColor(colorIndex, 100);
+        colorIndex += 2;
+        if (colorIndex >= 100) colorIndex = 0;
+      }, 50);
+
+      setTimeout(() => {
+        dateElement.style.opacity = "1";
+        dateElement.style.transform = "scale(1)";
+      }, 100);
+    }
+
+    function showDA() {
+      const dAElement = document.createElement("div");
+      dAElement.textContent = 'D & A <3';
+      dAElement.classList.add("dA");
+      document.body.appendChild(dAElement);
+
+      const centerX = window.innerWidth / 2;
+      const centerY = window.innerHeight / 2 + 150; // Ajusta la posición de D & A un poco más abajo
+      dAElement.style.left = `${centerX - 30}px`;
+      dAElement.style.top = `${centerY - 30}px`;
+      dAElement.style.color = 'pink';
+
+      setTimeout(() => {
+        dAElement.style.opacity = "1";
+        dAElement.style.transform = "scale(1)";
+      }, 100);
+    }
+
+    drawHeart();
+    setTimeout(showDate, 10000); // Aparece la fecha después de 1 segundo
+    setTimeout(showMonths, 1000);
+    setTimeout(showDA, 11000); // Aparece "D & A" después de todos los textos
+  </script>
+</body>
+
+</html>
